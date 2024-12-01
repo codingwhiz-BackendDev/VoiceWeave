@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333333;
+        }
+
+        .header span {
+            color: #0066ff;
+
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            color: #333333;
+            background: #f9f9f9;
+            resize: none;
+        }
+
+        textarea::placeholder {
+            color: #aaa;
+        }
+
+        .select {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        select {
+            padding: 10px;
+            border-radius: 25px;
+            border: 1px solid #e0e0e0;
+            background: #f9f9f9;
+            font-size: 1rem;
+            color: #333333;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background: #0066ff;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background: #0052cc;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #buttonStop {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header"> <span>VoiceWeave</span></div>
+        <div class="content">
+            <textarea id="textarea" placeholder="Write something here..."></textarea>
+            <div class="select">
+                <select id="selectVoice">
+                </select>
+                <button id="button">Listen</button>
+                <button id="buttonStop">Stop</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let speech = new SpeechSynthesisUtterance();
+        let voices = [];
+        let voiceSelect = document.getElementById('selectVoice');
+
+
+        // Add the speech to the button
+        document.getElementById('button').addEventListener("click", () => {
+            speech.text = document.getElementById('textarea').value;
+            window.speechSynthesis.speak(speech)
+        })
+        document.getElementById('buttonStop').addEventListener("click", () => {
+            window.speechSynthesis.cancel(speech)
+        })
+
+
+        // Get the voices available
+        window.speechSynthesis.onvoiceschanged = () => {
+            voices = window.speechSynthesis.getVoices();
+            speech.voice = voices[0]
+            voices.forEach((voice, i) => (voiceSelect.options[i] = new Option(voice.name, i)));
+        };
+
+
+        voiceSelect.addEventListener("change", () => {
+            speech.voice = voices[voiceSelect.value];
+        })
+    </script>
+</body>
+
+</html>
