@@ -53,7 +53,6 @@
             font-size: 1rem;
             color: #333333;
             background: #f9f9f9;
-            resize: none;
         }
 
         textarea::placeholder {
@@ -122,28 +121,38 @@
         let voices = [];
         let voiceSelect = document.getElementById('selectVoice');
 
+        // Function to load voices
+        function loadVoices() {
+            voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) {
+                setTimeout(loadVoices, 100); // Retry loading voices after a delay
+                return;
+            }
+            speech.voice = voices[0];
+            voices.forEach((voice, i) => {
+                voiceSelect.options[i] = new Option(`${voice.name} (${voice.lang})`, i);
+            });
+        }
+
+        // Listen for the voiceschanged event
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
 
         // Add the speech to the button
         document.getElementById('button').addEventListener("click", () => {
             speech.text = document.getElementById('textarea').value;
-            window.speechSynthesis.speak(speech)
-        })
+            window.speechSynthesis.speak(speech);
+        });
+
         document.getElementById('buttonStop').addEventListener("click", () => {
-            window.speechSynthesis.cancel(speech)
-        })
+            window.speechSynthesis.cancel();
+        });
 
-
-        // Get the voices available
-        window.speechSynthesis.onvoiceschanged = () => {
-            voices = window.speechSynthesis.getVoices();
-            speech.voice = voices[0]
-            voices.forEach((voice, i) => (voiceSelect.options[i] = new Option(voice.name, i)));
-        };
-
-
+        // Change voice
         voiceSelect.addEventListener("change", () => {
             speech.voice = voices[voiceSelect.value];
-        })
+        });
+
     </script>
 </body>
 
